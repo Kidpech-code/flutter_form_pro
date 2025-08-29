@@ -41,4 +41,11 @@
   "password_not_strong": "密码强度不足",
   "password_too_weak": "密码太弱",
   "national_id": "身份证号无效"
+  ,
+  "invalid_ean8": "无效的 EAN-8",
+  "invalid_ean13": "无效的 EAN-13",
+  "invalid_isbn10": "无效的 ISBN-10",
+  "invalid_isbn13": "无效的 ISBN-13",
+  "invalid_iban": "无效的 IBAN",
+  "unsupported_card_brand": "不支持的卡品牌"
 }

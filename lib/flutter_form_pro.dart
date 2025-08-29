@@ -15,3 +15,4 @@ export 'src/form_pro_field.dart';
 export 'src/validators.dart';
 export 'src/form_field_config.dart' hide Validator;
 export 'src/i18n.dart';
+export 'src/domain/messages.dart';

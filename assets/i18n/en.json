@@ -72,4 +72,11 @@
   "password_letters_upper_required": "Password must contain letters and at least 1 uppercase",
   "password_text_number_special_required": "Password must include a letter, a number and a special character",
   "national_id": "Invalid national ID"
+  ,
+  "invalid_ean8": "Invalid EAN-8",
+  "invalid_ean13": "Invalid EAN-13",
+  "invalid_isbn10": "Invalid ISBN-10",
+  "invalid_isbn13": "Invalid ISBN-13",
+  "invalid_iban": "Invalid IBAN",
+  "unsupported_card_brand": "Unsupported card brand"
 }

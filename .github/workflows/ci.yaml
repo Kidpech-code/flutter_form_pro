@@ -12,7 +12,16 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: "stable"
-      - name: Fetch packages
+      - name: Dart format check
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Fetch packages (root)
         run: flutter pub get
-      - name: Run tests
+      - name: Analyze (root)
+        run: flutter analyze
+      - name: Run tests (root)
         run: flutter test
+      - name: Analyze example app
+        run: |
+          cd example
+          flutter pub get
+          flutter analyze

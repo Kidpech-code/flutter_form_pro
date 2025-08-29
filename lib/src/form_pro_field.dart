@@ -2,8 +2,9 @@ import 'package:flutter/widgets.dart';
 import 'form_pro_widget.dart';
 
 /// A high-performance, fully customizable field widget bound to FormPro.
-/// - Rebuilds only when FormPro notifies; value and error are pulled lazily
-/// - Users define any UI via [builder]
+///
+/// - Rebuilds when the parent [FormProWidget] notifies
+/// - Provides current value, error, and an [onChanged] callback
 class FormProField<T> extends StatelessWidget {
   final String name;
   final Widget Function(BuildContext context, T? value, String? error, void Function(T? value) onChanged) builder;

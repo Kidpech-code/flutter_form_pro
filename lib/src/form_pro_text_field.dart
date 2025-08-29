@@ -4,6 +4,9 @@ import 'package:flutter/cupertino.dart';
 
 import 'form_pro_widget.dart';
 
+/// Material text field bound to a FormPro field by [formFieldName].
+///
+/// Displays the current value, writes back on change, and shows error text.
 class FormProTextField extends StatelessWidget {
   final String formFieldName;
   final InputDecoration? decoration;
@@ -16,14 +19,32 @@ class FormProTextField extends StatelessWidget {
     final config = form.fields[formFieldName]!;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 200),
-      child: TextFormField(
-        key: ValueKey(form.getValue(formFieldName)),
-        initialValue: form.getValue(formFieldName)?.toString(),
-        obscureText: config.obscureText,
-        decoration: (decoration ?? const InputDecoration()).copyWith(errorText: config.error),
-        onChanged: (val) {
-          form.setValue(formFieldName, val);
-        },
+      child: Semantics(
+        textField: true,
+        label: decoration?.labelText,
+        hint: decoration?.hintText,
+        value: form.getValue(formFieldName)?.toString(),
+        container: true,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              key: ValueKey(form.getValue(formFieldName)),
+              initialValue: form.getValue(formFieldName)?.toString(),
+              obscureText: config.obscureText,
+              decoration: (decoration ?? const InputDecoration()).copyWith(errorText: config.error),
+              onChanged: (val) {
+                form.setValue(formFieldName, val);
+              },
+            ),
+            if (config.error != null)
+              Semantics(
+                liveRegion: true,
+                label: 'Error: ${config.error}',
+                child: ExcludeSemantics(child: SizedBox(height: 0)),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -33,6 +54,11 @@ class FormProTextField extends StatelessWidget {
 /// - Accepts an external controller/focusNode for advanced cursor control
 /// - If not provided, creates and disposes its own
 /// - Syncs controller.text with FormPro value on rebuild without breaking selection
+/// Controller-friendly Material text field bound to FormPro.
+///
+/// Accepts external controller/focus for advanced cursor control. If omitted,
+/// it creates and disposes its own. Keeps controller text in sync with the
+/// FormPro value.
 class FormProTextControllerField extends StatefulWidget {
   final String formFieldName;
   final TextEditingController? controller;
@@ -106,7 +132,10 @@ class _FormProTextControllerFieldState extends State<FormProTextControllerField>
 }
 
 /// Numeric input field integrated with FormPro
-class FormProNumberField extends StatelessWidget {
+/// Numeric input field bound to FormPro.
+///
+/// Supports integers or decimals, with optional sign, via input formatters.
+class FormProNumberField extends StatefulWidget {
   final String formFieldName;
   final InputDecoration? decoration;
   final bool allowDecimal;
@@ -115,24 +144,55 @@ class FormProNumberField extends StatelessWidget {
   const FormProNumberField({super.key, required this.formFieldName, this.decoration, this.allowDecimal = true, this.signed = false});
 
   @override
+  State<FormProNumberField> createState() => _FormProNumberFieldState();
+}
+
+class _FormProNumberFieldState extends State<FormProNumberField> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final form = FormProInheritedWidget.of(context);
-    final config = form.fields[formFieldName]!;
-    final pattern = allowDecimal
-        ? (signed ? RegExp(r'^[+-]?[0-9]*[\.]?[0-9]*$') : RegExp(r'^[0-9]*[\.]?[0-9]*$'))
-        : (signed ? RegExp(r'^[+-]?[0-9]*$') : RegExp(r'^[0-9]*$'));
+    final config = form.fields[widget.formFieldName]!;
+    final valueStr = form.getValue(widget.formFieldName)?.toString() ?? '';
+    if (_controller.text != valueStr) {
+      final newLen = valueStr.length;
+      _controller.value = TextEditingValue(
+        text: valueStr,
+        selection: TextSelection.collapsed(offset: newLen),
+      );
+    }
+
+    final pattern = widget.allowDecimal
+        ? (widget.signed ? RegExp(r'^[+-]?[0-9]*[\.]?[0-9]*$') : RegExp(r'^[0-9]*[\.]?[0-9]*$'))
+        : (widget.signed ? RegExp(r'^[+-]?[0-9]*$') : RegExp(r'^[0-9]*$'));
+
     return TextFormField(
-      key: ValueKey(form.getValue(formFieldName)),
-      initialValue: form.getValue(formFieldName)?.toString(),
-      keyboardType: allowDecimal ? const TextInputType.numberWithOptions(decimal: true, signed: true) : TextInputType.number,
+      controller: _controller,
+      keyboardType: widget.allowDecimal ? const TextInputType.numberWithOptions(decimal: true, signed: true) : TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.allow(pattern)],
-      decoration: (decoration ?? const InputDecoration()).copyWith(errorText: config.error),
-      onChanged: (val) => form.setValue(formFieldName, val),
+      decoration: (widget.decoration ?? const InputDecoration()).copyWith(errorText: config.error),
+      onChanged: (val) => form.setValue(widget.formFieldName, val),
     );
   }
 }
 
-/// Date picker field integrated with FormPro. Stores value as YYYY-MM-DD string.
+/// Date picker field bound to FormPro.
+///
+/// Stores value as `YYYY-MM-DD` string. For tests or custom UX, you can inject
+/// a custom [pickDate] function; by default it uses [showDatePicker].
 class FormProDatePickerField extends StatelessWidget {
   final String formFieldName;
   final InputDecoration? decoration;
@@ -140,6 +200,9 @@ class FormProDatePickerField extends StatelessWidget {
   final DateTime? lastDate;
   final DateTime? initialDate;
   final Locale? locale;
+
+  /// Optional custom date picker function for testing or custom dialogs.
+  final Future<DateTime?> Function(BuildContext context, DateTime initialDate, DateTime firstDate, DateTime lastDate, Locale? locale)? pickDate;
 
   const FormProDatePickerField({
     super.key,
@@ -149,6 +212,7 @@ class FormProDatePickerField extends StatelessWidget {
     this.lastDate,
     this.initialDate,
     this.locale,
+    this.pickDate,
   });
 
   @override
@@ -163,13 +227,15 @@ class FormProDatePickerField extends StatelessWidget {
       onTap: () async {
         final now = DateTime.now();
         final parsed = _tryParseYmd(text);
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: initialDate ?? parsed ?? now,
-          firstDate: firstDate ?? DateTime(now.year - 100),
-          lastDate: lastDate ?? DateTime(now.year + 100),
-          locale: locale,
-        );
+        final init = initialDate ?? parsed ?? now;
+        final first = firstDate ?? DateTime(now.year - 100);
+        final last = lastDate ?? DateTime(now.year + 100);
+        DateTime? picked;
+        if (pickDate != null) {
+          picked = await pickDate!(context, init, first, last, locale);
+        } else {
+          picked = await showDatePicker(context: context, initialDate: init, firstDate: first, lastDate: last, locale: locale);
+        }
         if (picked != null) {
           final ymd = _formatYmd(picked);
           form.setValue(formFieldName, ymd);
@@ -196,6 +262,8 @@ class FormProDatePickerField extends StatelessWidget {
 }
 
 /// Material Autocomplete field integrated with FormPro
+/// Material Autocomplete bound to FormPro. Generic type parameter `T` is
+/// displayed via [displayStringForOption].
 class FormProAutocomplete<T extends Object> extends StatelessWidget {
   final String formFieldName;
   final Iterable<T> Function(TextEditingValue text) optionsBuilder;
@@ -237,6 +305,7 @@ class FormProAutocomplete<T extends Object> extends StatelessWidget {
 }
 
 /// Cupertino TextField integrated with FormPro
+/// Cupertino text field bound to FormPro.
 class FormProCupertinoTextField extends StatelessWidget {
   final String formFieldName;
   final String? placeholder;
@@ -266,6 +335,7 @@ class FormProCupertinoTextField extends StatelessWidget {
 }
 
 /// KeyboardListener wrapper to submit on Enter (desktop/web)
+/// Keyboard submit wrapper; calls FormPro submit on Enter/NumpadEnter.
 class FormProKeyboardSubmit extends StatelessWidget {
   final Widget child;
   final Set<LogicalKeyboardKey>? triggerKeys;

@@ -51,4 +51,56 @@ void main() {
       expect(v('three'), isNotNull);
     });
   });
+
+  group('Micro-validators', () {
+    test('EAN-13 checksum valid/invalid', () {
+      // 5901234123457 is a well-known valid EAN-13 sample
+      final ean = Validators.isEAN13Checksum();
+      expect(ean('5901234123457'), isNull);
+      expect(ean('5901234123456'), isNotNull);
+      // invalid length
+      expect(ean('123456789012'), isNotNull);
+    });
+
+    test('EAN-8 checksum valid/invalid', () {
+      final ean8 = Validators.isEAN8Checksum();
+      expect(ean8('73513537'), isNull); // known valid sample
+      expect(ean8('73513536'), isNotNull);
+      expect(ean8('1234567'), isNotNull);
+    });
+
+    test('Email in allowed domains', () {
+      final v = Validators.isEmailInDomains(['example.com', 'my.co']);
+      expect(v('user@example.com'), isNull);
+      expect(v('user@EXAMPLE.COM'), isNull);
+      expect(v('user@not-allowed.com'), isNotNull);
+      expect(v('invalid-email'), isNotNull);
+    });
+
+    test('IBAN validator (DE, GB samples)', () {
+      final iban = Validators.iban();
+      // Valid samples (sources commonly used in specs/tests)
+      expect(iban('DE89 3704 0044 0532 0130 00'), isNull);
+      expect(iban('GB82 WEST 1234 5698 7654 32'), isNull);
+      // Invalid checksum
+      expect(iban('DE89 3704 0044 0532 0130 01'), isNotNull);
+      // Invalid format
+      expect(iban('XX00 1234'), isNotNull);
+    });
+
+    test('Card brand detection and allowlist', () {
+      // Visa (16)
+      expect(Validators.detectCardBrand('4111111111111111'), 'visa');
+      // MasterCard (51)
+      expect(Validators.detectCardBrand('5105105105105100'), 'mastercard');
+      // Amex
+      expect(Validators.detectCardBrand('371449635398431'), 'amex');
+      // Unknown
+      expect(Validators.detectCardBrand('1234'), isNull);
+
+      final onlyVisa = Validators.isCardBrandOneOf(['visa']);
+      expect(onlyVisa('4111111111111111'), isNull);
+      expect(onlyVisa('5105105105105100'), isNotNull);
+    });
+  });
 }

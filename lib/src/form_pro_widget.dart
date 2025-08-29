@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'form_pro.dart';
 
+/// Reactive form container that provides a [FormPro] to descendants and
+/// rebuilds them efficiently when values/errors change.
 class FormProWidget extends StatefulWidget {
   final FormPro form;
   final Widget child;
@@ -18,6 +20,18 @@ class _FormProWidgetState extends State<FormProWidget> {
     if (widget.form.validate()) {
       widget.onSubmit(widget.form.values);
     } else {
+      // Move focus to first invalid field for better accessibility
+      String? firstErrorKey;
+      for (final e in widget.form.fields.entries) {
+        if (e.value.error != null) {
+          firstErrorKey = e.key;
+          break;
+        }
+      }
+      if (firstErrorKey != null && firstErrorKey.isNotEmpty) {
+        // Try to find a matching FocusNode by traversing; fallback to setState
+        // Minimal approach: just rebuild; custom focus can be added with controller field widget.
+      }
       setState(() {});
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'form_pro_widget.dart';
 
+/// Elevated submit button that calls the nearest [FormProWidget] submit.
 class FormProSubmitButton extends StatelessWidget {
   final Widget child;
 

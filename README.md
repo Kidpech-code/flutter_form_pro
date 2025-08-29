@@ -1,19 +1,24 @@
 ## FlutterFormPro
 
+[English] | [ภาษาไทย](doc/README.th.md)
+
 [![pub package](https://img.shields.io/pub/v/flutter_form_pro.svg?style=flat-square)](https://pub.dev/packages/flutter_form_pro)
 ![pub points](https://img.shields.io/pub/points/flutter_form_pro?label=pub%20points)
 ![popularity](https://img.shields.io/pub/popularity/flutter_form_pro)
 ![likes](https://img.shields.io/pub/likes/flutter_form_pro)
 
-Professional, extensible form validation and widgets for Flutter with built-in i18n (default Thai) and many ready-to-use validators.
+Professional, extensible form validation and widgets for Flutter with built-in i18n (default Thai) and many ready-to-use validators. This package supports both standalone validators and a small reactive widget layer.
 
-<img src="assets/images/screenshot.png" alt="FlutterFormPro screenshot" width="720" />
+<img src="assets/images/screenshot.png" alt="FlutterFormPro screenshot" width="480" />
+
+Docs: [Accessibility (a11y)](doc/A11Y_GUIDE.md) • [Design Notes (Large/Conditional/Async)](doc/DESIGN_NOTES.md)
 
 ### Features
 
 - Rich validator set (string, number, list, date/time, network, security, Thai-specific, credit card, etc.)
 - Localized error messages via JSON assets (th default; en/zh/ja/fr included)
 - High performance: cached i18n maps and precompiled RegExp
+- Reactive widgets: Material/Cupertino text fields, Autocomplete, number and date picker fields, submit and keyboard-submit helpers
 
 ### Why FlutterFormPro?
 
@@ -27,7 +32,7 @@ Add the package to your `pubspec.yaml` and declare the i18n assets (already conf
 
 ```yaml
 dependencies:
-  flutter_form_pro: ^0.0.1
+  flutter_form_pro: ^0.0.2
 ```
 
 Notes:
@@ -51,7 +56,7 @@ Future<void> main() async {
 }
 ```
 
-### Usage
+### Usage (Validators only)
 
 ```dart
 TextFormField(
@@ -71,6 +76,30 @@ Validators.isUrl();
 Validators.passwordNumberTextSpecial();
 Validators.isThaiPhone();
 Validators.isFutureDate();
+```
+
+### Optional fields made easy
+
+- Optional email field (empty is allowed; if provided, must be valid and <= 64 chars):
+
+```dart
+TextFormField(
+  validator: Validators.optional([
+    Validators.email(),
+    Validators.maxLength(64),
+  ]),
+)
+```
+
+- Wrap single validators with whenNotEmpty for optional fields:
+
+```dart
+TextFormField(
+  validator: Validators.multi([
+    Validators.whenNotEmpty(Validators.email()),
+    Validators.whenNotEmpty(Validators.maxLength(64)),
+  ]),
+)
 ```
 
 ### Example app
@@ -271,6 +300,75 @@ await FormProI18n.setLocaleAndLoad('<code>');
 
 The package falls back to Thai if the desired locale can’t be loaded. Core keys have built‑in Thai fallbacks to avoid empty strings even before assets load.
 
+#### Clean Architecture note (Messages abstraction)
+
+- Validators use a domain-level message abstraction `Messages.t(key)` instead of talking to i18n directly.
+- When you call `await FormProI18n.setLocaleAndLoad('xx')`, the package auto-bridges `Messages` to `FormProI18n.t(...)` so everything works out of the box.
+- Special case: If your app has its own localization system, you can plug it in:
+
+```dart
+import 'package:flutter_form_pro/flutter_form_pro.dart';
+
+void setupMyL10nBridge() {
+  Messages.setProvider((key, {fallback}) {
+    // Example: use your app localization; fall back to package defaults
+    final v = AppLocalizations.of(context)?.translate(key);
+    return v ?? fallback ?? key;
+  });
+}
+```
+
+If you don’t set a provider, `Messages` falls back to Thai defaults for common keys.
+
+### Custom messages and defaults
+
+- Per‑field custom message (pass a message into each validator):
+
+```dart
+TextFormField(
+  decoration: const InputDecoration(labelText: 'Email'),
+  validator: Validators.multi([
+    Validators.required('Please enter your email'),
+    Validators.email('Invalid email address'),
+    Validators.maxLength(64, 'Max 64 characters'),
+  ]),
+)
+```
+
+- Global override via i18n at runtime (affects all validators that use that key):
+
+```dart
+await FormProI18n.setLocaleAndLoad('en');
+FormProI18n.add('required', 'This field cannot be empty');
+FormProI18n.add('email', 'Please enter a valid email');
+// Now Validators.required() / Validators.email() use your custom messages.
+```
+
+- Persist custom messages by editing your app’s `assets/i18n/<locale>.json` and shipping them with your app (recommended for teamwork/CI):
+
+```json
+{
+  "required": "This field cannot be empty",
+  "email": "Please enter a valid email"
+}
+```
+
+- Use flutter_form_pro defaults (no setup):
+
+If you don’t load any locale, flutter_form_pro uses Thai (`th`) by default and includes built‑in Thai fallbacks, so messages work out of the box.
+
+```dart
+void main() {
+  // No i18n initialization — defaults to 'th'
+  runApp(const MyApp());
+}
+
+// Later in UI
+TextFormField(
+  validator: Validators.required(), // Shows Thai message by default
+)
+```
+
 ### Performance tips
 
 - i18n maps are cached per locale; use `preload([...])` if switching often.
@@ -398,3 +496,13 @@ const FormProDatePickerField(
   decoration: InputDecoration(labelText: 'Birthday'),
 )
 ```
+
+### Pub points checklist (docs & quality)
+
+- API docs: Public classes and constructors include concise dartdoc (FormPro, FormProWidget, FormProField, fields, validators, i18n).
+- README: Contains badges, feature list, usage, examples, troubleshooting, and testing instructions.
+- Example: A runnable example is included under `example/`.
+- License: MIT license provided.
+- CI: Workflow runs `flutter test` on pushes/PRs.
+
+If your pub score flags documentation coverage, consider adding more dartdoc to any newly added public members.

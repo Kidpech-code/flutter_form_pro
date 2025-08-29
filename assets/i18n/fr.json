@@ -41,4 +41,11 @@
   "password_not_strong": "Mot de passe pas assez fort",
   "password_too_weak": "Mot de passe trop faible",
   "national_id": "Numéro d'identification invalide"
+  ,
+  "invalid_ean8": "EAN-8 invalide",
+  "invalid_ean13": "EAN-13 invalide",
+  "invalid_isbn10": "ISBN-10 invalide",
+  "invalid_isbn13": "ISBN-13 invalide",
+  "invalid_iban": "IBAN invalide",
+  "unsupported_card_brand": "Marque de carte non prise en charge"
 }

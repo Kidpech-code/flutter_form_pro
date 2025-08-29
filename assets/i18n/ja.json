@@ -41,4 +41,11 @@
   "password_not_strong": "パスワードの強度が不足しています",
   "password_too_weak": "パスワードが弱すぎます",
   "national_id": "身分証番号が無効です"
+  ,
+  "invalid_ean8": "無効な EAN-8",
+  "invalid_ean13": "無効な EAN-13",
+  "invalid_isbn10": "無効な ISBN-10",
+  "invalid_isbn13": "無効な ISBN-13",
+  "invalid_iban": "無効な IBAN",
+  "unsupported_card_brand": "サポートされていないカードブランド"
 }

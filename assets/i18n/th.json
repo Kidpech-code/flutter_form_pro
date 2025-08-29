@@ -71,4 +71,11 @@
   "password_letters_upper_required": "รหัสผ่านต้องเป็นตัวอักษรและมีตัวพิมพ์ใหญ่อย่างน้อย 1 ตัว",
   "password_text_number_special_required": "รหัสผ่านต้องมีตัวอักษร ตัวเลข และอักขระพิเศษ อย่างน้อยอย่างละ 1 ตัว",
   "national_id": "รหัสประชาชนไม่ถูกต้อง"
+  ,
+  "invalid_ean8": "EAN-8 ไม่ถูกต้อง",
+  "invalid_ean13": "EAN-13 ไม่ถูกต้อง",
+  "invalid_isbn10": "ISBN-10 ไม่ถูกต้อง",
+  "invalid_isbn13": "ISBN-13 ไม่ถูกต้อง",
+  "invalid_iban": "IBAN ไม่ถูกต้อง",
+  "unsupported_card_brand": "แบรนด์บัตรที่ไม่รองรับ"
 }

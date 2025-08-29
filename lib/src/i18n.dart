@@ -1,8 +1,11 @@
 /// i18n utility for FlutterFormPro
 library;
+
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/services.dart' show rootBundle;
+import 'domain/messages.dart';
 
 /// i18n utility for FlutterFormPro (load from assets/i18n/{locale}.json)
 class FormProI18n {
@@ -37,6 +40,8 @@ class FormProI18n {
   static Future<void> setLocaleAndLoad(String locale) async {
     setLocale(locale);
     await load(locale);
+    // Bridge Messages provider so Validators can remain infra-agnostic
+    Messages.setProvider((key, {String? fallback}) => t(key, fallback: fallback));
   }
 
   /// Preload a list of locales (silently ignores failures). Useful for apps switching locales at runtime.
@@ -55,25 +60,42 @@ class FormProI18n {
 
     Future<Map<String, String>> loadLocale(String loc) async {
       // When used as a dependency, loadString must include the package name prefix.
-      final jsonStr = await rootBundle.loadString('packages/flutter_form_pro/assets/i18n/$loc.json');
-      return Map<String, String>.from(json.decode(jsonStr));
+      try {
+        final jsonStr = await rootBundle.loadString('packages/flutter_form_pro/assets/i18n/$loc.json');
+        return Map<String, String>.from(json.decode(jsonStr));
+      } catch (e) {
+        // Log warning for debugging but don't crash
+        if (kDebugMode) {
+          print('FormProI18n Warning: Failed to load locale "$loc" from assets/i18n/$loc.json - $e');
+        }
+        rethrow;
+      }
     }
 
     try {
       _cache[l] = await loadLocale(l);
       _locale = l;
+      // Keep Messages provider bridged
+      Messages.setProvider((key, {String? fallback}) => t(key, fallback: fallback));
     } catch (_) {
       // fallback to default locale
       if (l != _defaultLocale) {
         try {
           _cache[_defaultLocale] = _cache[_defaultLocale] ?? await loadLocale(_defaultLocale);
           _locale = _defaultLocale;
-        } catch (_) {
+          Messages.setProvider((key, {String? fallback}) => t(key, fallback: fallback));
+        } catch (fallbackError) {
           // leave empty map on total failure
+          if (kDebugMode) {
+            print('FormProI18n Error: Failed to load both "$l" and default "$_defaultLocale" - $fallbackError');
+          }
           _cache[_defaultLocale] = const {};
           _locale = _defaultLocale;
         }
       } else {
+        if (kDebugMode) {
+          print('FormProI18n Error: Failed to load default locale "$_defaultLocale"');
+        }
         _cache[_defaultLocale] = const {};
         _locale = _defaultLocale;
       }
