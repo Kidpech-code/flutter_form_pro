@@ -32,7 +32,7 @@ Add the package to your `pubspec.yaml` and declare the i18n assets (already conf
 
 ```yaml
 dependencies:
-  flutter_form_pro: ^0.0.5
+  flutter_form_pro: ^0.0.6
 ```
 
 Notes:
@@ -494,6 +494,14 @@ const FormProNumberField(
 const FormProDatePickerField(
   formFieldName: 'birthday',
   decoration: InputDecoration(labelText: 'Birthday'),
+)
+
+// Phone input (auto strips separators and '+66' -> local '0' by default)
+const FormProPhoneField(
+  formFieldName: 'phone',
+  // Customize normalization per country if needed:
+  // stripDialCodes: ['+66', '+1'],
+  // replaceWithLeadingZero: true,
 )
 ```
 

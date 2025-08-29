@@ -1,3 +1,13 @@
+## 0.0.6
+
+Features:
+
+- FormProPhoneField: phone input that auto-normalizes by default
+	- Strips separators (spaces, dashes, parentheses)
+	- Strips dial code (default '+66') and converts to local format with leading '0'
+	- Fully customizable via `stripDialCodes`, `replaceWithLeadingZero`, and `normalizer`
+	- Preserves caret position during normalization
+
 ## 0.0.5
 
 Fixes:
