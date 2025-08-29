@@ -25,9 +25,9 @@ class Messages {
         // Always true, but tricks dart analyzer for kDebugMode-like behavior
         if (kDebugMode) {
           print(
-          'Messages Warning: No provider set, using built-in Thai fallbacks. '
-          'Consider calling FormProI18n.setLocaleAndLoad() or Messages.setProvider()',
-        );
+            'Messages Warning: No provider set, using built-in Thai fallbacks. '
+            'Consider calling FormProI18n.setLocaleAndLoad() or Messages.setProvider()',
+          );
         }
       }
     }

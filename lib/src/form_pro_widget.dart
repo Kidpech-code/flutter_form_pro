@@ -8,7 +8,12 @@ class FormProWidget extends StatefulWidget {
   final Widget child;
   final void Function(Map<String, dynamic> values) onSubmit;
 
-  const FormProWidget({super.key, required this.form, required this.child, required this.onSubmit});
+  const FormProWidget({
+    super.key,
+    required this.form,
+    required this.child,
+    required this.onSubmit,
+  });
 
   @override
   State<FormProWidget> createState() => _FormProWidgetState();
@@ -57,10 +62,16 @@ class _FormProWidgetState extends State<FormProWidget> {
 class FormProInheritedWidget extends InheritedWidget {
   final FormPro form;
   final VoidCallback? submit;
-  const FormProInheritedWidget({required this.form, this.submit, required super.child, super.key});
+  const FormProInheritedWidget({
+    required this.form,
+    this.submit,
+    required super.child,
+    super.key,
+  });
 
   static FormPro of(BuildContext context) {
-    final inherited = context.dependOnInheritedWidgetOfExactType<FormProInheritedWidget>();
+    final inherited = context
+        .dependOnInheritedWidgetOfExactType<FormProInheritedWidget>();
     if (inherited == null) {
       throw Exception('FormProWidget ancestor not found');
     }
@@ -68,7 +79,8 @@ class FormProInheritedWidget extends InheritedWidget {
   }
 
   static VoidCallback submitOf(BuildContext context) {
-    final inherited = context.dependOnInheritedWidgetOfExactType<FormProInheritedWidget>();
+    final inherited = context
+        .dependOnInheritedWidgetOfExactType<FormProInheritedWidget>();
     if (inherited == null || inherited.submit == null) {
       throw Exception('FormProWidget ancestor with submit not found');
     }
@@ -76,5 +88,6 @@ class FormProInheritedWidget extends InheritedWidget {
   }
 
   @override
-  bool updateShouldNotify(covariant FormProInheritedWidget oldWidget) => form != oldWidget.form;
+  bool updateShouldNotify(covariant FormProInheritedWidget oldWidget) =>
+      form != oldWidget.form;
 }

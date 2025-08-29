@@ -3,14 +3,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_form_pro/flutter_form_pro.dart';
 
 void main() {
-  testWidgets('Validators can be used standalone with TextFormField', (tester) async {
+  testWidgets('Validators can be used standalone with TextFormField', (
+    tester,
+  ) async {
     final key = GlobalKey<FormState>();
     await tester.pumpWidget(
       MaterialApp(
         home: Material(
           child: Form(
             key: key,
-            child: TextFormField(validator: Validators.multi([Validators.required(), Validators.email()])),
+            child: TextFormField(
+              validator: Validators.multi([
+                Validators.required(),
+                Validators.email(),
+              ]),
+            ),
           ),
         ),
       ),

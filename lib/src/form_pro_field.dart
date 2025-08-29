@@ -7,7 +7,13 @@ import 'form_pro_widget.dart';
 /// - Provides current value, error, and an [onChanged] callback
 class FormProField<T> extends StatelessWidget {
   final String name;
-  final Widget Function(BuildContext context, T? value, String? error, void Function(T? value) onChanged) builder;
+  final Widget Function(
+    BuildContext context,
+    T? value,
+    String? error,
+    void Function(T? value) onChanged,
+  )
+  builder;
 
   const FormProField({super.key, required this.name, required this.builder});
 
@@ -18,7 +24,12 @@ class FormProField<T> extends StatelessWidget {
       builder: (context) {
         final value = form.getValue(name) as T?;
         final error = form.fields[name]?.error;
-        return builder(context, value, error, (val) => form.setValue(name, val));
+        return builder(
+          context,
+          value,
+          error,
+          (val) => form.setValue(name, val),
+        );
       },
     );
   }

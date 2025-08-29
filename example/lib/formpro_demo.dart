@@ -10,7 +10,8 @@ class FormProFullDemo extends StatefulWidget {
   State<FormProFullDemo> createState() => _FormProFullDemoState();
 }
 
-class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderStateMixin {
+class _FormProFullDemoState extends State<FormProFullDemo>
+    with TickerProviderStateMixin {
   late final FormPro _form;
   late final TabController _tabController;
   final Map<String, FocusNode> _focusNodes = {};
@@ -24,34 +25,83 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
 
     _form = FormPro.builder()
         // Basic fields
-        .addField('email', FormFieldConfig(validators: [Validators.required(), Validators.email()]))
-        .addField('username', FormFieldConfig(validators: [Validators.required(), Validators.usernameLettersOnly()]))
+        .addField(
+          'email',
+          FormFieldConfig(
+            validators: [Validators.required(), Validators.email()],
+          ),
+        )
+        .addField(
+          'username',
+          FormFieldConfig(
+            validators: [
+              Validators.required(),
+              Validators.usernameLettersOnly(),
+            ],
+          ),
+        )
         .addField(
           'usernameNet',
           FormFieldConfig(
             validators: [
               Validators.required(),
-              Validators.async((value) async {
-                await Future.delayed(const Duration(milliseconds: 500));
-                final v = (value ?? '').toString();
-                if (v.isEmpty) return Messages.t('required');
-                // Fake server rule: names containing "taken" are unavailable
-                return v.toLowerCase().contains('taken') ? Messages.t('username_taken', fallback: 'Username already taken') : null;
-              }, pendingMessage: Messages.t('checking', fallback: 'Checking...')),
+              Validators.async(
+                (value) async {
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  final v = (value ?? '').toString();
+                  if (v.isEmpty) return Messages.t('required');
+                  // Fake server rule: names containing "taken" are unavailable
+                  return v.toLowerCase().contains('taken')
+                      ? Messages.t(
+                          'username_taken',
+                          fallback: 'Username already taken',
+                        )
+                      : null;
+                },
+                pendingMessage: Messages.t('checking', fallback: 'Checking...'),
+              ),
             ],
           ),
         )
         .addField('city', FormFieldConfig(validators: [Validators.required()]))
-        .addField('amount', FormFieldConfig(validators: [Validators.required(), Validators.isCurrency()]))
-        .addField('birthday', FormFieldConfig(validators: [Validators.required(), Validators.date()]))
+        .addField(
+          'amount',
+          FormFieldConfig(
+            validators: [Validators.required(), Validators.isCurrency()],
+          ),
+        )
+        .addField(
+          'birthday',
+          FormFieldConfig(
+            validators: [Validators.required(), Validators.date()],
+          ),
+        )
         // Thai-specific validators
-        .addField('thaiPhone', FormFieldConfig(validators: [Validators.isThaiPhone()]))
-        .addField('thaiZip', FormFieldConfig(validators: [Validators.isThaiZipCode()]))
-        .addField('nationalId', FormFieldConfig(validators: [Validators.nationalId()]))
+        .addField(
+          'thaiPhone',
+          FormFieldConfig(validators: [Validators.isThaiPhone()]),
+        )
+        .addField(
+          'thaiZip',
+          FormFieldConfig(validators: [Validators.isThaiZipCode()]),
+        )
+        .addField(
+          'nationalId',
+          FormFieldConfig(validators: [Validators.nationalId()]),
+        )
         // Financial/Security validators
-        .addField('creditCard', FormFieldConfig(validators: [Validators.creditCard()]))
+        .addField(
+          'creditCard',
+          FormFieldConfig(validators: [Validators.creditCard()]),
+        )
         .addField('iban', FormFieldConfig(validators: [Validators.iban()]))
-        .addField('strongPassword', FormFieldConfig(validators: [Validators.passwordStrong()], obscureText: true))
+        .addField(
+          'strongPassword',
+          FormFieldConfig(
+            validators: [Validators.passwordStrong()],
+            obscureText: true,
+          ),
+        )
         .addField('otp', FormFieldConfig(validators: [Validators.otp()]))
         // Advanced validators
         .addField(
@@ -108,7 +158,10 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
       // Debounce; then trigger form.validate twice to pick up async result
       _usernameNetDebounce = Timer(const Duration(milliseconds: 350), () {
         _form.validate();
-        Future.delayed(const Duration(milliseconds: 400), () => _form.validate());
+        Future.delayed(
+          const Duration(milliseconds: 400),
+          () => _form.validate(),
+        );
       });
     });
   }
@@ -131,7 +184,10 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
       appBar: AppBar(
         title: const Text('FormPro Full Demo'),
         actions: [
-          IconButton(icon: const Icon(Icons.info_outline), onPressed: () => _showValidatorInfo(context)),
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () => _showValidatorInfo(context),
+          ),
           IconButton(icon: const Icon(Icons.refresh), onPressed: _resetForm),
         ],
         bottom: TabBar(
@@ -150,7 +206,12 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
         child: Expanded(
           child: TabBarView(
             controller: _tabController,
-            children: [_buildBasicValidatorsTab(), _buildThaiValidatorsTab(), _buildSecurityValidatorsTab(), _buildAdvancedValidatorsTab()],
+            children: [
+              _buildBasicValidatorsTab(),
+              _buildThaiValidatorsTab(),
+              _buildSecurityValidatorsTab(),
+              _buildAdvancedValidatorsTab(),
+            ],
           ),
         ),
       ),
@@ -171,7 +232,10 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          const Text('Basic Validators', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text(
+            'Basic Validators',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 16),
           Expanded(
             child: ListView(
@@ -180,13 +244,21 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                   FormProTextControllerField(
                     formFieldName: 'email',
                     focusNode: _focusNodes['email'],
-                    decoration: const InputDecoration(labelText: 'Email Address', hintText: 'user@example.com', prefixIcon: Icon(Icons.email)),
+                    decoration: const InputDecoration(
+                      labelText: 'Email Address',
+                      hintText: 'user@example.com',
+                      prefixIcon: Icon(Icons.email),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   FormProTextControllerField(
                     formFieldName: 'username',
                     focusNode: _focusNodes['username'],
-                    decoration: const InputDecoration(labelText: 'Username (Letters only)', hintText: 'JohnDoe', prefixIcon: Icon(Icons.person)),
+                    decoration: const InputDecoration(
+                      labelText: 'Username (Letters only)',
+                      hintText: 'JohnDoe',
+                      prefixIcon: Icon(Icons.person),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   FormProTextControllerField(
@@ -201,7 +273,12 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                           ? const SizedBox(
                               height: 18,
                               width: 18,
-                              child: Padding(padding: EdgeInsets.all(2.0), child: CircularProgressIndicator(strokeWidth: 2)),
+                              child: Padding(
+                                padding: EdgeInsets.all(2.0),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
                             )
                           : null,
                     ),
@@ -210,21 +287,40 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                   FormProTextControllerField(
                     formFieldName: 'city',
                     focusNode: _focusNodes['city'],
-                    decoration: const InputDecoration(labelText: 'City', hintText: 'Bangkok', prefixIcon: Icon(Icons.location_city)),
+                    decoration: const InputDecoration(
+                      labelText: 'City',
+                      hintText: 'Bangkok',
+                      prefixIcon: Icon(Icons.location_city),
+                    ),
                   ),
                 ]),
                 _buildDemoSection('Formatted Input', [
                   FormProTextControllerField(
                     formFieldName: 'amount',
                     focusNode: _focusNodes['amount'],
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: false),
-                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^[0-9]*[\.]?[0-9]*$'))],
-                    decoration: const InputDecoration(labelText: 'Amount (Currency)', hintText: '1234.56', prefixIcon: Icon(Icons.attach_money)),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                      signed: false,
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'^[0-9]*[\.]?[0-9]*$'),
+                      ),
+                    ],
+                    decoration: const InputDecoration(
+                      labelText: 'Amount (Currency)',
+                      hintText: '1234.56',
+                      prefixIcon: Icon(Icons.attach_money),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   const FormProDatePickerField(
                     formFieldName: 'birthday',
-                    decoration: InputDecoration(labelText: 'Birthday (YYYY-MM-DD)', hintText: '1990-01-01', suffixIcon: Icon(Icons.cake)),
+                    decoration: InputDecoration(
+                      labelText: 'Birthday (YYYY-MM-DD)',
+                      hintText: '1990-01-01',
+                      suffixIcon: Icon(Icons.cake),
+                    ),
                   ),
                 ]),
               ],
@@ -240,7 +336,10 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          const Text('Thai-Specific Validators', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text(
+            'Thai-Specific Validators',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 16),
           Expanded(
             child: ListView(
@@ -251,7 +350,11 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                     focusNode: _focusNodes['thaiPhone'],
                     keyboardType: TextInputType.phone,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(labelText: 'Thai Phone Number', hintText: '0812345678', prefixIcon: Icon(Icons.phone)),
+                    decoration: const InputDecoration(
+                      labelText: 'Thai Phone Number',
+                      hintText: '0812345678',
+                      prefixIcon: Icon(Icons.phone),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   FormProTextControllerField(
@@ -259,7 +362,11 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                     focusNode: _focusNodes['thaiZip'],
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(labelText: 'Thai Postal Code', hintText: '10110', prefixIcon: Icon(Icons.local_post_office)),
+                    decoration: const InputDecoration(
+                      labelText: 'Thai Postal Code',
+                      hintText: '10110',
+                      prefixIcon: Icon(Icons.local_post_office),
+                    ),
                   ),
                 ]),
                 _buildDemoSection('Thai Government ID', [
@@ -268,7 +375,11 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                     focusNode: _focusNodes['nationalId'],
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(labelText: 'Thai National ID', hintText: '1234567890123', prefixIcon: Icon(Icons.credit_card)),
+                    decoration: const InputDecoration(
+                      labelText: 'Thai National ID',
+                      hintText: '1234567890123',
+                      prefixIcon: Icon(Icons.credit_card),
+                    ),
                   ),
                 ]),
                 const Card(
@@ -277,10 +388,17 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('ℹ️ Thai Validator Info', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          'ℹ️ Thai Validator Info',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         SizedBox(height: 8),
-                        Text('• Phone: Supports mobile (08x, 09x) and some landlines (06x)'),
-                        Text('• Postal: 5-digit codes that don\'t start with 0'),
+                        Text(
+                          '• Phone: Supports mobile (08x, 09x) and some landlines (06x)',
+                        ),
+                        Text(
+                          '• Postal: 5-digit codes that don\'t start with 0',
+                        ),
                         Text('• National ID: Uses MOD 11 checksum algorithm'),
                       ],
                     ),
@@ -299,7 +417,10 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          const Text('Security & Financial Validators', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text(
+            'Security & Financial Validators',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 16),
           Expanded(
             child: ListView(
@@ -321,7 +442,11 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                     focusNode: _focusNodes['otp'],
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(labelText: 'OTP Code', hintText: '123456', prefixIcon: Icon(Icons.security)),
+                    decoration: const InputDecoration(
+                      labelText: 'OTP Code',
+                      hintText: '123456',
+                      prefixIcon: Icon(Icons.security),
+                    ),
                   ),
                 ]),
                 _buildDemoSection('Financial', [
@@ -330,7 +455,11 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                     focusNode: _focusNodes['creditCard'],
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(labelText: 'Credit Card', hintText: '4111111111111111', prefixIcon: Icon(Icons.credit_card)),
+                    decoration: const InputDecoration(
+                      labelText: 'Credit Card',
+                      hintText: '4111111111111111',
+                      prefixIcon: Icon(Icons.credit_card),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   FormProTextControllerField(
@@ -356,7 +485,10 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          const Text('Advanced Validators', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text(
+            'Advanced Validators',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 16),
           Expanded(
             child: ListView(
@@ -365,7 +497,11 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                   FormProTextControllerField(
                     formFieldName: 'isbn',
                     focusNode: _focusNodes['isbn'],
-                    decoration: const InputDecoration(labelText: 'ISBN-13 (Optional)', hintText: '978-0134685991', prefixIcon: Icon(Icons.book)),
+                    decoration: const InputDecoration(
+                      labelText: 'ISBN-13 (Optional)',
+                      hintText: '978-0134685991',
+                      prefixIcon: Icon(Icons.book),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   FormProTextControllerField(
@@ -381,7 +517,11 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                   FormProTextControllerField(
                     formFieldName: 'hexColor',
                     focusNode: _focusNodes['hexColor'],
-                    decoration: const InputDecoration(labelText: 'Hex Color (Optional)', hintText: '#FF5733 or FFF', prefixIcon: Icon(Icons.palette)),
+                    decoration: const InputDecoration(
+                      labelText: 'Hex Color (Optional)',
+                      hintText: '#FF5733 or FFF',
+                      prefixIcon: Icon(Icons.palette),
+                    ),
                   ),
                 ]),
                 const Card(
@@ -390,7 +530,10 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('🚀 Performance Features', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          '🚀 Performance Features',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         SizedBox(height: 8),
                         Text('• Pre-compiled RegExp patterns for speed'),
                         Text('• Cached i18n messages'),
@@ -409,7 +552,10 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
                       children: [
                         Text(
                           '🌍 I18n Support',
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                         SizedBox(height: 8),
                         Text(
@@ -438,7 +584,11 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.blue),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.blue,
+              ),
             ),
             const SizedBox(height: 12),
             ...children,
@@ -454,7 +604,11 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(isValid ? '✅ All validations passed!' : '❌ Please fix validation errors'),
+          content: Text(
+            isValid
+                ? '✅ All validations passed!'
+                : '❌ Please fix validation errors',
+          ),
           backgroundColor: isValid ? Colors.green : Colors.red,
         ),
       );
@@ -474,7 +628,12 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error during validation: $e'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error during validation: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -484,9 +643,14 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Form Submission'),
-          content: const Text('In a real app, you would submit the validated data to your backend service here.'),
+          content: const Text(
+            'In a real app, you would submit the validated data to your backend service here.',
+          ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -515,28 +679,42 @@ class _FormProFullDemoState extends State<FormProFullDemo> with TickerProviderSt
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('🔧 Available Validators:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  '🔧 Available Validators:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 Text('• Basic: required, email, numeric, alpha'),
                 Text('• Thai: phone, postal code, national ID'),
                 Text('• Security: strong password, OTP, credit card'),
                 Text('• Financial: IBAN, currency formatting'),
                 Text('• Advanced: ISBN, UUID, hex colors'),
                 SizedBox(height: 16),
-                Text('🌟 Key Features:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  '🌟 Key Features:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 Text('• Thai-first internationalization'),
                 Text('• Clean Architecture design'),
                 Text('• High performance with caching'),
                 Text('• Comprehensive error handling'),
                 Text('• Easy standalone usage'),
                 SizedBox(height: 16),
-                Text('📱 Usage:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  '📱 Usage:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 Text('• FormPro for reactive forms'),
                 Text('• Validators.* for standalone use'),
                 Text('• FormProTextField for UI widgets'),
               ],
             ),
           ),
-          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
         );
       },
     );

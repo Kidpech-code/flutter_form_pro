@@ -11,7 +11,11 @@ class FormProTextField extends StatelessWidget {
   final String formFieldName;
   final InputDecoration? decoration;
 
-  const FormProTextField({super.key, required this.formFieldName, this.decoration});
+  const FormProTextField({
+    super.key,
+    required this.formFieldName,
+    this.decoration,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +36,9 @@ class FormProTextField extends StatelessWidget {
               key: ValueKey(form.getValue(formFieldName)),
               initialValue: form.getValue(formFieldName)?.toString(),
               obscureText: config.obscureText,
-              decoration: (decoration ?? const InputDecoration()).copyWith(errorText: config.error),
+              decoration: (decoration ?? const InputDecoration()).copyWith(
+                errorText: config.error,
+              ),
               onChanged: (val) {
                 form.setValue(formFieldName, val);
               },
@@ -82,15 +88,19 @@ class FormProTextControllerField extends StatefulWidget {
   });
 
   @override
-  State<FormProTextControllerField> createState() => _FormProTextControllerFieldState();
+  State<FormProTextControllerField> createState() =>
+      _FormProTextControllerFieldState();
 }
 
-class _FormProTextControllerFieldState extends State<FormProTextControllerField> {
+class _FormProTextControllerFieldState
+    extends State<FormProTextControllerField> {
   TextEditingController? _ownController;
   FocusNode? _ownFocusNode;
 
-  TextEditingController get _controller => widget.controller ?? (_ownController ??= TextEditingController());
-  FocusNode get _focusNode => widget.focusNode ?? (_ownFocusNode ??= FocusNode());
+  TextEditingController get _controller =>
+      widget.controller ?? (_ownController ??= TextEditingController());
+  FocusNode get _focusNode =>
+      widget.focusNode ?? (_ownFocusNode ??= FocusNode());
 
   @override
   void dispose() {
@@ -125,7 +135,9 @@ class _FormProTextControllerFieldState extends State<FormProTextControllerField>
       textInputAction: widget.textInputAction,
       inputFormatters: widget.inputFormatters,
       obscureText: config.obscureText,
-      decoration: (widget.decoration ?? const InputDecoration()).copyWith(errorText: config.error),
+      decoration: (widget.decoration ?? const InputDecoration()).copyWith(
+        errorText: config.error,
+      ),
       onChanged: (val) => form.setValue(widget.formFieldName, val),
     );
   }
@@ -141,7 +153,13 @@ class FormProNumberField extends StatefulWidget {
   final bool allowDecimal;
   final bool signed;
 
-  const FormProNumberField({super.key, required this.formFieldName, this.decoration, this.allowDecimal = true, this.signed = false});
+  const FormProNumberField({
+    super.key,
+    required this.formFieldName,
+    this.decoration,
+    this.allowDecimal = true,
+    this.signed = false,
+  });
 
   @override
   State<FormProNumberField> createState() => _FormProNumberFieldState();
@@ -176,14 +194,20 @@ class _FormProNumberFieldState extends State<FormProNumberField> {
     }
 
     final pattern = widget.allowDecimal
-        ? (widget.signed ? RegExp(r'^[+-]?[0-9]*[\.]?[0-9]*$') : RegExp(r'^[0-9]*[\.]?[0-9]*$'))
+        ? (widget.signed
+              ? RegExp(r'^[+-]?[0-9]*[\.]?[0-9]*$')
+              : RegExp(r'^[0-9]*[\.]?[0-9]*$'))
         : (widget.signed ? RegExp(r'^[+-]?[0-9]*$') : RegExp(r'^[0-9]*$'));
 
     return TextFormField(
       controller: _controller,
-      keyboardType: widget.allowDecimal ? const TextInputType.numberWithOptions(decimal: true, signed: true) : TextInputType.number,
+      keyboardType: widget.allowDecimal
+          ? const TextInputType.numberWithOptions(decimal: true, signed: true)
+          : TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.allow(pattern)],
-      decoration: (widget.decoration ?? const InputDecoration()).copyWith(errorText: config.error),
+      decoration: (widget.decoration ?? const InputDecoration()).copyWith(
+        errorText: config.error,
+      ),
       onChanged: (val) => form.setValue(widget.formFieldName, val),
     );
   }
@@ -202,7 +226,14 @@ class FormProDatePickerField extends StatelessWidget {
   final Locale? locale;
 
   /// Optional custom date picker function for testing or custom dialogs.
-  final Future<DateTime?> Function(BuildContext context, DateTime initialDate, DateTime firstDate, DateTime lastDate, Locale? locale)? pickDate;
+  final Future<DateTime?> Function(
+    BuildContext context,
+    DateTime initialDate,
+    DateTime firstDate,
+    DateTime lastDate,
+    Locale? locale,
+  )?
+  pickDate;
 
   const FormProDatePickerField({
     super.key,
@@ -223,7 +254,10 @@ class FormProDatePickerField extends StatelessWidget {
     return TextFormField(
       controller: TextEditingController(text: text ?? ''),
       readOnly: true,
-      decoration: (decoration ?? const InputDecoration()).copyWith(errorText: config.error, suffixIcon: const Icon(Icons.calendar_today)),
+      decoration: (decoration ?? const InputDecoration()).copyWith(
+        errorText: config.error,
+        suffixIcon: const Icon(Icons.calendar_today),
+      ),
       onTap: () async {
         final now = DateTime.now();
         final parsed = _tryParseYmd(text);
@@ -234,7 +268,13 @@ class FormProDatePickerField extends StatelessWidget {
         if (pickDate != null) {
           picked = await pickDate!(context, init, first, last, locale);
         } else {
-          picked = await showDatePicker(context: context, initialDate: init, firstDate: first, lastDate: last, locale: locale);
+          picked = await showDatePicker(
+            context: context,
+            initialDate: init,
+            firstDate: first,
+            lastDate: last,
+            locale: locale,
+          );
         }
         if (picked != null) {
           final ymd = _formatYmd(picked);
@@ -293,7 +333,9 @@ class FormProAutocomplete<T extends Object> extends StatelessWidget {
           return TextFormField(
             controller: textController,
             focusNode: focusNode,
-            decoration: (decoration ?? const InputDecoration()).copyWith(errorText: config.error),
+            decoration: (decoration ?? const InputDecoration()).copyWith(
+              errorText: config.error,
+            ),
             onChanged: (val) => form.setValue(formFieldName, val),
             onFieldSubmitted: (_) => onFieldSubmitted(),
           );
@@ -310,7 +352,11 @@ class FormProCupertinoTextField extends StatelessWidget {
   final String formFieldName;
   final String? placeholder;
 
-  const FormProCupertinoTextField({super.key, required this.formFieldName, this.placeholder});
+  const FormProCupertinoTextField({
+    super.key,
+    required this.formFieldName,
+    this.placeholder,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -327,7 +373,13 @@ class FormProCupertinoTextField extends StatelessWidget {
         ),
         if (config.error != null) ...[
           const SizedBox(height: 6),
-          Text(config.error!, style: const TextStyle(color: CupertinoColors.systemRed, fontSize: 12)),
+          Text(
+            config.error!,
+            style: const TextStyle(
+              color: CupertinoColors.systemRed,
+              fontSize: 12,
+            ),
+          ),
         ],
       ],
     );
@@ -341,12 +393,19 @@ class FormProKeyboardSubmit extends StatelessWidget {
   final Set<LogicalKeyboardKey>? triggerKeys;
   final bool autofocus;
 
-  const FormProKeyboardSubmit({super.key, required this.child, this.triggerKeys, this.autofocus = false});
+  const FormProKeyboardSubmit({
+    super.key,
+    required this.child,
+    this.triggerKeys,
+    this.autofocus = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final submit = FormProInheritedWidget.submitOf(context);
-    final keys = triggerKeys ?? {LogicalKeyboardKey.enter, LogicalKeyboardKey.numpadEnter};
+    final keys =
+        triggerKeys ??
+        {LogicalKeyboardKey.enter, LogicalKeyboardKey.numpadEnter};
     return KeyboardListener(
       focusNode: FocusNode(),
       autofocus: autofocus,

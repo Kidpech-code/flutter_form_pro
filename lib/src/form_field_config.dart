@@ -6,7 +6,11 @@ class FormFieldConfig {
   final bool obscureText;
   String? error;
 
-  FormFieldConfig({required this.validators, this.initialValue, this.obscureText = false});
+  FormFieldConfig({
+    required this.validators,
+    this.initialValue,
+    this.obscureText = false,
+  });
 
   String? validate(dynamic value) {
     for (final validator in validators) {
