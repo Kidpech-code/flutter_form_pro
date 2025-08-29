@@ -1,3 +1,10 @@
+## 0.0.4
+
+Improvements:
+
+- Style: Fixed analyzer lints (curly_braces_in_flow_control_structures) across `validators.dart` to satisfy pana/pub points.
+- Quality: `flutter analyze` now reports zero issues; test suite unchanged and passing.
+
 ## 0.0.3
 
 Fixes & housekeeping:

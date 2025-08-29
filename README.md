@@ -32,7 +32,7 @@ Add the package to your `pubspec.yaml` and declare the i18n assets (already conf
 
 ```yaml
 dependencies:
-  flutter_form_pro: ^0.0.3
+  flutter_form_pro: ^0.0.4
 ```
 
 Notes:
