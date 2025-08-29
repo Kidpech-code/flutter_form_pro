@@ -1,3 +1,10 @@
+## 0.0.3
+
+Fixes & housekeeping:
+
+- CI: Fix Flutter setup by switching to `channel: stable` in GitHub Actions.
+- Style: Ran `dart format` across the repo to satisfy pub.dev (pana) formatting checks.
+
 ## 0.0.2
 
 Improvements:
