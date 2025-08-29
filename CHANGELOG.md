@@ -1,3 +1,9 @@
+## 0.0.5
+
+Fixes:
+
+- Style: Applied `dart format` to align with pub.dev formatter checks.
+
 ## 0.0.4
 
 Improvements:
